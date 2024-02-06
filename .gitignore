@@ -1,1 +1,7 @@
 /agents/__pycache__/
+/hf_home/
+# Ignore all folders starting with a dot
+/.*/*
+
+# Except for .gitignore
+!.gitignore

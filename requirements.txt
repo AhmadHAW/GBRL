@@ -1,0 +1,12 @@
+jupyter
+torch 
+torchvision
+torchaudio
+optax
+transformers
+datasets
+nltk
+pytorch_lightning
+gradio
+sentencepiece
+seqeval

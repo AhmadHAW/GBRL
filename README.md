@@ -1,7 +1,7 @@
 # Graph Based Reasoning Language with LLama 2 7b: GUI, Graph Language and Experiments
 By Ahmad Khalidi (HAW-Hamburg)
 
-Large language models (LLM) show great potential in reasoning capabilities, but often struggle with multi-step reasoning and chain of thoughts. In this project, we train a sequence-to-sequence transformer (LLama 2 7b) to work with textual entailment on a wide range of common-sense, entailment, legal, ethics and nature science datasets. The datasets are therefor embedded into a graph based reasoning language (GBRL). This GBRL is specially created for LLMs and allows models to understand current context and requested goal in a structured manner.
+Large language models (LLM) show great potential in reasoning capabilities, but often struggle with multi-step reasoning and chain of thoughts. In this project, we train a huggingface🤗 sequence-to-sequence transformer model(LLama 2 7b) to work with textual entailment on a wide range of common-sense, entailment, legal, ethics and nature science datasets. The datasets are therefor embedded into a graph based reasoning language (GBRL). This GBRL is specially created for LLMs and allows models to understand current context and requested goal in a structured manner.
 
 [Figure 1]: ./Images/Question.jpg
 [Figure 2]: ./Images/Explanation.jpg
@@ -14,6 +14,16 @@ Our model predicts these relationships and is able to construct explanations tha
 
 In this work we describe the GUI, define a GBRL, transform exemplary data sets into the GBRL. We then experiment with Chat-GPT and the trained LLama 2 model by querying them simple representive tasks.<br>
 We will show that the formal definitions for explanations and chains of thought in our GBRL are too imprecise and thus confuse the models or lead to unusable conclusions. We therefore conclude that the relationships between premises, explanations, chains of thought and hypotheses need to be made more precise.
+
+To run the examples in this project, simply build the image in the root path by running:
+```
+docker build -t gbrl .
+```
+and then replace the square brackets with the access token to the transformer model and run the image with:
+```
+docker run -p 8888:8888 -v ${PWD}:/home/jovyan -e HUGGINGFACE_ACCESS_TOKEN=[REPLACE WITH ACCESS TOKEN] gbrl
+```
+
 
 ## Related Work
 
@@ -84,8 +94,8 @@ while we expect a response like:
 ```
 <t2><:><s3><;>
 ```
-Questions, prompts or story continuations are modeled like masked language modeling. The answer to a question does not textual entail from the question. Instead, the question **with** the answer entails from common sense (or any other entailment definition). That is also why we introduce the special token *\<C\>*, which allows us to infer from common sense reasoning, so we can narrow down the relationship.
-The placeholder is narrowed down again by the answer candidates *\<s3\>* and *\<s4\>*, while the *\<|\>* operator allows the model to respond with one or more answer candidates.<br>
+Questions, prompts or story continuations are modeled like masked language modeling. The answer to a question does not textual entail from the question. Instead, the question **with** the answer entails from the context. In this case, the context is common sense in general. To represent common sense as an abstract form, we introduce the special token *\<C\>*.
+The placeholder *\<t2\>* is narrowed down by the answer candidates *\<s3\>* and *\<s4\>*, while the *\<|\>* operator allows the model to respond with one or more answer candidates.<br>
 
 We can transform most reasoning and entailment datasets with these language rules. Possible entailment relations can be found on [agent.py](agents/agent.py).
 
@@ -126,7 +136,7 @@ We can can conclude that:
 This experiment showcases our finetuned sequence to sequence transformer model. LLama 2 7b is part of the LLama 2 family and was released 2023 by Meta AI [[8]](#8). We have finetuned the 7 billion parameter model on common sense, entailment, legal, ethics and nature science datasets that were transformed into GBRL tasks (total 36 mio datapoints). We were only able to train the model on 1/12 epoch, which already took 3 days on 9 24GB GPUs.<br>
 Please refer to [llama2_experiment.ipynb](llama2_experiment.ipynb) for the experiment.<br>
 
-The model does not yet have the ability to respond in a syntactically correct form. It confuses the task of predicting the textual relationship between nodes with the task of generating statements that fit the given relationship. The main reason for this bad performance could be due to the short training time. Nevertheless, the model has already shown signs of an understanding of textual entailments.
+In summary, the model does not yet have the ability to respond in a syntactically correct form. It confuses the task of predicting the textual relationship between nodes with the task of generating statements that fit the given relationship. The main reason for this bad performance could be due to the short training time. Nevertheless, the model has already shown signs of an understanding of textual entailments.
 
 ## Conclusions and Future Work
 We have shown what a graph-based reasoning language can look like. We have shown how we can transform common sense and entailment datasets into this language. We defined expectations and compared them with the output of Chat-GPT and our finetuned LLama 2 model. We found that our formal definitions for explanations and chains of thought are imprecise and confuse the model, leaving too many gaps and possibly leading to repetition or invalid entailments.<br>
@@ -145,7 +155,7 @@ Levesque, Hector J., Davis, Ernest and Morgenstern, Leora. "The Winograd Schema 
 Dagan, Ido, Glickman, Oren and Magnini, Bernardo. "The PASCAL Recognising Textual Entailment Challenge." Paper presented at the meeting of the Proceedings of the PASCAL Challenges Workshop on Recognising Textual Entailment, 2005.
 
 <a id="4">[4]</a>
-Mostafazadeh, N., Nathanael Chambers, Xiaodong He, Devi Parikh, Dhruv Batra, Lucy Vanderwende, Pushmeet Kohli and James F. Allen. “A Corpus and Evaluation Framework for Deeper Understanding of Commonsense Stories.” ArXiv abs/1604.01696 (2016): n. pag.
+Mostafazadeh, N., Nathanael Chambers, Xiaodong He, Devi Parikh, Dhruv Batra, Lucy Vanderwende, Pushmeet Kohli and James F. Allen. “A Corpus and Evaluation Framework for Deeper Understanding of Commonsense Stories.” ArXiv abs/1604.01696 (2016)
 
 <a id="5">[5]</a>
 Kwiatkowski, Tom, Palomaki, Jennimaria, Redfield, Olivia, Collins, Michael, Parikh, Ankur, Alberti, Chris, Epstein, Danielle, Polosukhin, Illia, Kelcey, Matthew, Devlin, Jacob, Lee, Kenton, Toutanova, Kristina N., Jones, Llion, Chang, Ming-Wei, Dai, Andrew, Uszkoreit, Jakob, Le, Quoc and Petrov, Slav Natural Questions: a Benchmark for Question Answering Research. (2019).
@@ -154,10 +164,10 @@ Kwiatkowski, Tom, Palomaki, Jennimaria, Redfield, Olivia, Collins, Michael, Pari
 Bowman, Samuel R., Gabor Angeli, Christopher Potts and Christopher D. Manning. “A large annotated corpus for learning natural language inference.” Conference on Empirical Methods in Natural Language Processing (2015).
 
 <a id="7">[7]</a>
-Brown, Tom B., Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan et al. "Language Models are Few-Shot Learners." arXiv preprint arXiv:2005.14165 (2020).
+Brown, Tom B., Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared Kaplan, Prafulla Dhariwal, Arvind Neelakantan et al. "Language Models are Few-Shot Learners." ArXiv preprint ArXiv:2005.14165 (2020).
 
 <a id="8">[8]</a>
-Touvron, Hugo, Martin, Louis, Stone, Kevin R., Albert, Peter, Almahairi, Amjad, Babaei, Yasmine, Bashlykov, Nikolay, Batra, Soumya, Bhargava, Prajjwal, Bhosale, Shruti, Bikel, D., Blecher, Lukas, Ferrer, Cristian Cantón, Chen, Moya, Cucurull, Guillem, Esiobu, David, Fernandes, Jude, Fu, Jeremy, Fu, Wenyin, Fuller, Brian, Gao, Cynthia, Goswami, Vedanuj, Goyal, Naman, Hartshorn, A., Hosseini, Saghar, Hou, Rui, Inan, Hakan, Kardas, Marcin, Kerkez, Viktor, Khabsa, Madian, Kloumann, Isabel M., Korenev, A., Koura, Punit Singh, Lachaux, Marie-Anne, Lavril, Thibaut, Lee, Jenya, Liskovich, Diana, Lu, Yinghai, Mao, Yuning, Martinet, Xavier, Mihaylov, Todor, Mishra, Pushkar, Molybog, Igor, Nie, Yixin, Poulton, Andrew, Reizenstein, Jeremy, Rungta, Rashi, Saladi, Kalyan, Schelten, Alan, Silva, Ruan, Smith, Eric Michael, Subramanian, R., Tan, Xia, Tang, Binh, Taylor, Ross, Williams, Adina, Kuan, Jian Xiang, Xu, Puxin, Yan, Zhengxu, Zarov, Iliyan, Zhang, Yuchen, Fan, Angela, Kambadur, Melanie, Narang, Sharan, Rodriguez, Aurelien, Stojnic, Robert, Edunov, Sergey and Scialom, Thomas LLama 2: Open Foundation and Fine-Tuned Chat Models. } ArXiv{ } abs/2307.09288 (2023). .
+Touvron, Hugo, Martin, Louis, Stone, Kevin R., Albert, Peter, Almahairi, Amjad, Babaei, Yasmine, Bashlykov, Nikolay, Batra, Soumya, Bhargava, Prajjwal, Bhosale, Shruti, Bikel, D., Blecher, Lukas, Ferrer, Cristian Cantón, Chen, Moya, Cucurull, Guillem, Esiobu, David, Fernandes, Jude, Fu, Jeremy, Fu, Wenyin, Fuller, Brian, Gao, Cynthia, Goswami, Vedanuj, Goyal, Naman, Hartshorn, A., Hosseini, Saghar, Hou, Rui, Inan, Hakan, Kardas, Marcin, Kerkez, Viktor, Khabsa, Madian, Kloumann, Isabel M., Korenev, A., Koura, Punit Singh, Lachaux, Marie-Anne, Lavril, Thibaut, Lee, Jenya, Liskovich, Diana, Lu, Yinghai, Mao, Yuning, Martinet, Xavier, Mihaylov, Todor, Mishra, Pushkar, Molybog, Igor, Nie, Yixin, Poulton, Andrew, Reizenstein, Jeremy, Rungta, Rashi, Saladi, Kalyan, Schelten, Alan, Silva, Ruan, Smith, Eric Michael, Subramanian, R., Tan, Xia, Tang, Binh, Taylor, Ross, Williams, Adina, Kuan, Jian Xiang, Xu, Puxin, Yan, Zhengxu, Zarov, Iliyan, Zhang, Yuchen, Fan, Angela, Kambadur, Melanie, Narang, Sharan, Rodriguez, Aurelien, Stojnic, Robert, Edunov, Sergey and Scialom, Thomas LLama 2: Open Foundation and Fine-Tuned Chat Models. ArXiv abs/2307.09288 (2023).
 
 <a id="9">[9]</a>
-Francis, Nadime, Alastair Green, Paolo Guagliardo, Leonid Libkin, Tobias Lindaaker, Victor Marsault, Stefan Plantikow, Mats Rydberg, Petra Selmer and Andrés Taylor. “Cypher: An Evolving Query Language for Property Graphs.” Proceedings of the 2018 International Conference on Management of Data (2018): n. pag.
+Francis, Nadime, Alastair Green, Paolo Guagliardo, Leonid Libkin, Tobias Lindaaker, Victor Marsault, Stefan Plantikow, Mats Rydberg, Petra Selmer and Andrés Taylor. “Cypher: An Evolving Query Language for Property Graphs.” Proceedings of the 2018 International Conference on Management of Data (2018)
