@@ -36,12 +36,13 @@ class LLama2Agent(Agent):
         Loads the LLama2 model, that was trained on base of the DeepSpeed example application "DeepSpeed-Chat", which suggests the following
         initialization on inference.
         see https://github.com/microsoft/DeepSpeedExamples/blob/master/applications/DeepSpeed-Chat/inference/chatbot.py
+        Without the adjustments, running this in a dockerfile results in too crushing the kernel.
         '''
         tokenizer = AutoTokenizer.from_pretrained(HUGGINGFACE_MODEL_NAME, fast_tokenizer = True)
         tokenizer.pad_token = tokenizer.eos_token
-        model_config = AutoConfig.from_pretrained(HUGGINGFACE_MODEL_NAME)
-        model_class = AutoModelForCausalLM.from_config(model_config)
-        model = model_class.from_pretrained(HUGGINGFACE_MODEL_NAME, from_tf=bool(".ckpt" in HUGGINGFACE_MODEL_NAME), config=model_config)
+        #model_config = AutoConfig.from_pretrained(HUGGINGFACE_MODEL_NAME)
+        #model_class = AutoModelForCausalLM.from_config(model_config)
+        model = AutoModelForCausalLM.from_pretrained(HUGGINGFACE_MODEL_NAME)#, from_tf=bool(".ckpt" in HUGGINGFACE_MODEL_NAME), config=model_config)
         model.config.end_token_id = tokenizer.eos_token_id
         model.config.pad_token_id = model.config.eos_token_id
         model.resize_token_embeddings(len(tokenizer))
