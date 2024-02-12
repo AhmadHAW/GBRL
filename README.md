@@ -1,4 +1,4 @@
-# Graph Based Reasoning Language with LLM Prototype: Integrating Explanations in the Textual Entailment Concept
+# Integrating Explanations in the Textual Entailment of an LLM
 By Ahmad Khalidi (HAW-Hamburg)
 
 Large language models (LLM) show great potential in reasoning capabilities, but often struggle with multi-step reasoning and chain of thoughts. In this project, we train a huggingface🤗 sequence-to-sequence transformer model(LLama 2 7b) to work with textual entailment on a wide range of common-sense, entailment, legal, ethics and nature science datasets. The datasets are therefor embedded into a graph based reasoning language (GBRL). This GBRL is specially created for LLMs and allows models to understand current context and requested goal in a structured manner.
